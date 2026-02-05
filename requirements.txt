@@ -1,0 +1,38 @@
+# Core Framework
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+
+# Async File Operations
+aiofiles==25.1.0
+
+# Data Models & Validation
+pydantic==2.11.10
+pydantic-settings==2.10.1
+
+# AI & LLM Framework
+crewai==1.7.2
+langchain==1.2.0
+langchain-core==1.2.5
+langchain-community==0.4.1
+
+# LLM Integration
+openai==1.83.0
+litellm==1.52.14
+
+# Workflow & State Management
+langgraph==1.0.5
+langgraph-checkpoint==3.0.1
+
+# HTTP & API
+httpx==0.28.1
+requests==2.32.5
+
+# Environment & Configuration
+python-dotenv==1.1.1
+
+# Date & Time
+python-dateutil==2.9.0
+
+# Utilities
+instructor==1.12.0

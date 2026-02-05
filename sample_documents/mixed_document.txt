@@ -1,0 +1,13 @@
+QUARTERLY REPORT Q4 2023
+
+Financial summary...
+
+---EMBEDDED INVOICE---
+Invoice: INV-Q4-999
+Services: Consulting Q4
+Amount: $50,000
+Due: 30 days
+---END INVOICE---
+
+Also confirms contract renewal:
+Contract Value: $150,000 for 2024

@@ -1,0 +1,18 @@
+INVOICE
+Invoice #: INV-2024-001
+Date: January 15, 2024
+
+From: ABC Corporation, 123 Business St, New York, NY 10001
+To: XYZ Company, 456 Client Ave, Los Angeles, CA 90001
+
+Items:
+1. Software License - Professional: $999.00
+2. Support Services (Annual): $299.00
+3. Training Package: $500.00
+
+Subtotal: $1,798.00
+Tax (8%): $143.84
+Total: $1,941.84
+
+Payment Terms: Net 30
+Due: February 15, 2024

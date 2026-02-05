@@ -1,0 +1,18 @@
+PURCHASE ORDER
+PO #: PO-2024-0055
+Date: January 10, 2024
+
+Vendor: Office Supplies Direct
+Ship To: Corporate Office, SF
+
+Items:
+1. Office Chairs (25) @ $350 = $8,750
+2. Standing Desks (15) @ $650 = $9,750
+3. Monitor Arms (40) @ $120 = $4,800
+
+Subtotal: $23,300
+Shipping: $500
+Total: $23,800
+
+Delivery: January 25, 2024
+Terms: Net 45

@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Document Processing System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 60px 40px;
+            text-align: center;
+            background: #f8f9ff;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 30px;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+            transform: translateY(-2px);
+        }
+
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: #e8ebff;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+
+        .upload-text {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status-area {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            background: #f8f9fa;
+            display: none;
+        }
+
+        .status-area.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .status-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .status-icon {
+            font-size: 2em;
+            margin-right: 15px;
+        }
+
+        .status-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .result-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .result-label {
+            font-size: 0.85em;
+            text-transform: uppercase;
+            color: #666;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .result-value {
+            font-size: 1.1em;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .confidence-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .confidence-high {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .confidence-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .confidence-low {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .extracted-fields {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .field-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .field-item:last-child {
+            border-bottom: none;
+        }
+
+        .field-name {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .field-value {
+            color: #333;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #721c24;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #155724;
+        }
+
+        .file-info {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .remove-file {
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: color 0.2s;
+        }
+
+        .remove-file:hover {
+            color: #a71d2a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Document Processing</h1>
+            <p>Upload your documents and let AI do the magic</p>
+        </div>
+
+        <div class="content">
+            <!-- Upload Area -->
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📄</div>
+                <div class="upload-text">Drag & Drop your document here</div>
+                <div class="upload-hint">or click to browse (PDF, TXT, DOC, DOCX)</div>
+                <input type="file" id="fileInput" accept=".pdf,.txt,.doc,.docx">
+            </div>
+
+            <!-- File Info -->
+            <div class="file-info" id="fileInfo" style="display: none;">
+                <div>
+                    <span class="file-name" id="fileName"></span>
+                </div>
+                <span class="remove-file" id="removeFile">✕</span>
+            </div>
+
+            <!-- Upload Button -->
+            <div style="text-align: center;">
+                <button class="btn" id="uploadBtn" disabled>
+                    Process Document
+                </button>
+            </div>
+
+            <!-- Status Area -->
+            <div class="status-area" id="statusArea">
+                <div class="status-header">
+                    <span class="status-icon" id="statusIcon">⏳</span>
+                    <span class="status-title" id="statusTitle">Processing...</span>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+
+                <div id="statusContent">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000';
+        let selectedFile = null;
+        let processingInterval = null;
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const removeFile = document.getElementById('removeFile');
+        const statusArea = document.getElementById('statusArea');
+        const statusIcon = document.getElementById('statusIcon');
+        const statusTitle = document.getElementById('statusTitle');
+        const statusContent = document.getElementById('statusContent');
+        const progressFill = document.getElementById('progressFill');
+
+        // Click to upload
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files[0]);
+            }
+        });
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        // Remove file
+        removeFile.addEventListener('click', () => {
+            selectedFile = null;
+            fileInfo.style.display = 'none';
+            uploadBtn.disabled = true;
+            fileInput.value = '';
+        });
+
+        // Upload button
+        uploadBtn.addEventListener('click', uploadDocument);
+
+        function handleFileSelect(file) {
+            const allowedTypes = ['application/pdf', 'text/plain', 'application/msword', 
+                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            
+            if (!allowedTypes.includes(file.type) && !file.name.match(/\.(pdf|txt|doc|docx)$/i)) {
+                alert('Please upload a valid document (PDF, TXT, DOC, DOCX)');
+                return;
+            }
+
+            selectedFile = file;
+            fileName.textContent = file.name;
+            fileInfo.style.display = 'flex';
+            uploadBtn.disabled = false;
+        }
+
+        async function uploadDocument() {
+            if (!selectedFile) return;
+
+            uploadBtn.disabled = true;
+            statusArea.classList.add('show');
+            setStatus('processing', 'Uploading...', 10);
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/v1/documents/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error('Upload failed');
+
+                const data = await response.json();
+                const documentId = data.document_id;
+
+                setStatus('processing', 'Processing document...', 30);
+                pollStatus(documentId);
+
+            } catch (error) {
+                setStatus('error', 'Upload failed', 0);
+                statusContent.innerHTML = `
+                    <div class="error-message">
+                        ❌ Error: ${error.message}
+                    </div>
+                `;
+                uploadBtn.disabled = false;
+            }
+        }
+
+        async function pollStatus(documentId) {
+            let attempts = 0;
+            const maxAttempts = 60;
+
+            processingInterval = setInterval(async () => {
+                attempts++;
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/v1/documents/${documentId}/status`);
+                    const data = await response.json();
+
+                    if (data.status === 'completed') {
+                        clearInterval(processingInterval);
+                        setStatus('processing', 'Retrieving results...', 80);
+                        await getResults(documentId);
+                    } else if (data.status === 'failed') {
+                        clearInterval(processingInterval);
+                        setStatus('error', 'Processing failed', 0);
+                        uploadBtn.disabled = false;
+                    } else if (attempts >= maxAttempts) {
+                        clearInterval(processingInterval);
+                        setStatus('error', 'Timeout', 0);
+                        uploadBtn.disabled = false;
+                    } else {
+                        setStatus('processing', 'Processing...', 30 + (attempts * 2));
+                    }
+                } catch (error) {
+                    clearInterval(processingInterval);
+                    setStatus('error', 'Error checking status', 0);
+                    uploadBtn.disabled = false;
+                }
+            }, 2000);
+        }
+
+        async function getResults(documentId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/v1/documents/${documentId}/results`);
+                const data = await response.json();
+
+                setStatus('success', 'Processing Complete!', 100);
+                displayResults(data);
+                uploadBtn.disabled = false;
+
+            } catch (error) {
+                setStatus('error', 'Failed to retrieve results', 0);
+                uploadBtn.disabled = false;
+            }
+        }
+
+        function setStatus(type, message, progress) {
+            const icons = {
+                processing: '⏳',
+                success: '✅',
+                error: '❌'
+            };
+
+            statusIcon.textContent = icons[type] || '⏳';
+            statusTitle.textContent = message;
+            progressFill.style.width = progress + '%';
+        }
+
+        function displayResults(data) {
+            const classification = data.classification;
+            const extraction = data.extraction;
+            const validation = data.validation;
+            const routing = data.routing;
+
+            const confidenceClass = (conf) => {
+                if (conf >= 0.8) return 'confidence-high';
+                if (conf >= 0.5) return 'confidence-medium';
+                return 'confidence-low';
+            };
+
+            const confidenceText = (conf) => {
+                return `${(conf * 100).toFixed(0)}% Confidence`;
+            };
+
+            let html = `
+                <div class="success-message">
+                    ✅ Document processed successfully in ${data.processing_time?.toFixed(1)}s
+                </div>
+
+                <div class="result-card">
+                    <div class="result-label">📊 Classification</div>
+                    <div class="result-value">
+                        ${classification.document_type}
+                        <span class="confidence-badge ${confidenceClass(classification.confidence)}">
+                            ${confidenceText(classification.confidence)}
+                        </span>
+                    </div>
+                    <div style="margin-top: 10px; color: #666; font-size: 0.9em;">
+                        ${classification.reasoning}
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-label">📝 Extracted Fields</div>
+                    <div class="extracted-fields">
+            `;
+
+            for (const [key, value] of Object.entries(extraction.fields)) {
+                const displayValue = typeof value === 'object' ? JSON.stringify(value) : value;
+                html += `
+                    <div class="field-item">
+                        <span class="field-name">${key}</span>
+                        <span class="field-value">${displayValue}</span>
+                    </div>
+                `;
+            }
+
+            html += `
+                    </div>
+                    <span class="confidence-badge ${confidenceClass(extraction.confidence)}" style="margin-top: 10px; display: inline-block;">
+                        ${confidenceText(extraction.confidence)}
+                    </span>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-label">✓ Validation</div>
+                    <div class="result-value">
+                        ${validation.is_valid ? '✅ Valid' : '❌ Invalid'}
+                        <span class="confidence-badge ${confidenceClass(validation.confidence)}">
+                            ${confidenceText(validation.confidence)}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-label">🎯 Routing Decision</div>
+                    <div class="result-value">${routing.destination}</div>
+                    <div style="margin-top: 10px; color: #666; font-size: 0.9em;">
+                        Human Review: ${routing.requires_human_review ? '⚠️ Required' : '✅ Not Required'}
+                    </div>
+                    <div style="margin-top: 5px; color: #666; font-size: 0.9em;">
+                        ${routing.reasoning}
+                    </div>
+                </div>
+            `;
+
+            statusContent.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

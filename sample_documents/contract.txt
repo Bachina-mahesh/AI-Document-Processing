@@ -1,0 +1,21 @@
+SERVICE AGREEMENT
+Date: January 1, 2024
+
+PARTIES:
+Provider: TechServices Inc. (Delaware)
+Client: GlobalCorp Ltd. (California)
+
+TERM: 12 months (Jan 1 - Dec 31, 2024)
+
+SERVICES:
+- 24/7 cloud monitoring
+- Security updates
+- Monthly reports
+
+COMPENSATION: $5,000/month (due 1st of month)
+
+OBLIGATIONS:
+- 99.9% uptime SLA
+- Access credentials within 5 days
+
+SIGNATURES: [To be signed]

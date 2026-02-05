@@ -1,0 +1,16 @@
+TECHNICAL SPECIFICATION
+Product: Advanced Widget Pro
+Version: 3.
+
+Specifications:
+- Dimensions: 10cm x 15cm x
+- Weight: [MISSING]
+- Power: 120V AC
+- Interface:
+
+Requirements:
+- OS: Windows 10 or
+- RAM: 8GB
+- Storage:
+
+[TRUNCATED]
